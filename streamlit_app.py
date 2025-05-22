@@ -33,6 +33,22 @@ max_pdr = st.slider("Max 120+ %", 0.0, 10.0, 2.0) / 100
 horizon = st.selectbox("Projection horizon (months)", [1, 3, 6, 12])
 
 # ---------- Optimise button -------------------
+def gpt_explanation(recoveries: dict, kpi: dict, horizon: int) -> str:
+    """Return a plain-English narrative from GPT-4o."""
+    prompt = f"""
+You are a senior credit-collections analyst. Summarise in ≤180 words why the
+Simplex optimiser recommends these liquidation percentages
+{recoveries} for month 1 and what the portfolio KPIs will look like after
+{horizon} months ({kpi}).  Tone: clear, professional, no math jargon.
+"""
+    # cheapest/fastest GPT-4o-mini; change model as you wish
+    response = openai.ChatCompletion.create(
+        model="gpt-4o-mini",
+        temperature=0.4,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    return response.choices[0].message.content.strip()
+
 if st.button("Optimise"):
     bal_dict = dict(zip(data.bucket, data.balance))
     history = simulate(
@@ -42,6 +58,12 @@ if st.button("Optimise"):
     )
     rec = history[0]["recoveries"]
     last = history[-1]["kpi"]
+        # ----- GPT narrative (optional) ----------------------------------------
+    with st.spinner("Generating AI explanation…"):
+        explanation = gpt_explanation(rec, last, horizon)
+    st.subheader("AI rationale")
+    st.text_area(label="", value=explanation, height=180)
+
 
     # display results
     st.subheader("Month-1 liquidation targets (%)")
