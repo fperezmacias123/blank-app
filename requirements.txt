@@ -1,1 +1,5 @@
 streamlit
+pandas
+ortools
+tabulate
+openai        # only if you’ll use the GPT explanation
