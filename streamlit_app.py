@@ -1,6 +1,10 @@
 import streamlit as st
 import pandas as pd
 from optimiser import simulate          # we’ll add optimiser.py next
+import openai, os
+
+openai.api_key = st.secrets["OPENAI_API_KEY"]        #  ⬅️ new
+
 
 st.set_page_config(page_title="A/R Simplex Optimiser", layout="centered")
 
