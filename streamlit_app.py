@@ -1,6 +1,9 @@
 import streamlit as st
 import pandas as pd
 from optimiser import simulate
+from openai import OpenAI
+client = OpenAI()                      # picks up key from env/secrets
+
 
 # optional GPT explanation (works only if OPENAI_API_KEY is set in secrets)
 try:
